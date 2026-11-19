@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LeadFlow Pro" />
+  <meta name="theme-color" content="#0A0A0C" />
+  <title>LeadFlow Pro — Gestão Inteligente de Leads Imobiliários</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-dark: #0A0A0C;
+      --bg-card: #131418;
+      --border-gold: rgba(212, 175, 55, 0.28);
+      --gold-primary: #D4AF37;
+      --gold-light: #F3E5AB;
+      --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #F5D76E 50%, #B8860B 100%);
+      --text-main: #F5F5F7;
+      --text-muted: #9CA3AF;
+      --led-red: #FF3B30;
+      --led-red-glow: rgba(255, 59, 48, 0.45);
+      --led-yellow: #FFCC00;
+      --led-yellow-glow: rgba(255, 204, 0, 0.45);
+      --led-green: #34C759;
+      --led-green-glow: rgba(52, 199, 89, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(10, 10, 12, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-gold);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--gold-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0A0A0C;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+    }
+
+    .brand-text h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    .trial-badge {
+      background: rgba(212, 175, 55, 0.14);
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-light);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 20px;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .kpi-card.gold {
+      border-color: var(--border-gold);
+      background: linear-gradient(180deg, rgba(212, 175, 55, 0.08) 0%, var(--bg-card) 100%);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .kpi-value.gold-text {
+      color: var(--gold-primary);
+    }
+
+    .import-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .import-info h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin-bottom: 4px;
+    }
+
+    .import-info p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .import-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-gold {
+      background: var(--gold-gradient);
+      color: #0A0A0C;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.25);
+      text-decoration: none;
+    }
+
+    .btn-outline {
+      background: rgba(212, 175, 55, 0.12);
+      color: var(--gold-light);
+      border: 1px solid var(--gold-primary);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .alert-box {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+    .alert-box.error {
+      display: block;
+      background: rgba(255, 59, 48, 0.14);
+      border: 1px solid rgba(255, 59, 48, 0.45);
+      color: #FCA5A5;
+    }
+    .alert-box.success {
+      display: block;
+      background: rgba(52, 199, 89, 0.14);
+      border: 1px solid rgba(52, 199, 89, 0.45);
+      color: #86EFAC;
+    }
+
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .pill {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .pill.active {
+      border-color: var(--gold-primary);
+      color: #fff;
+      background: rgba(212, 175, 55, 0.14);
+    }
+
+    .led {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .led.quente {
+      background: var(--led-red);
+      box-shadow: 0 0 10px var(--led-red-glow), 0 0 4px var(--led-red);
+    }
+    .led.morno {
+      background: var(--led-yellow);
+      box-shadow: 0 0 10px var(--led-yellow-glow), 0 0 4px var(--led-yellow);
+    }
+    .led.frio {
+      background: var(--led-green);
+      box-shadow: 0 0 10px var(--led-green-glow), 0 0 4px var(--led-green);
+    }
+
+    .leads-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lead-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .lead-card:hover {
+      border-color: var(--border-gold);
+    }
+
+    .lead-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .lead-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .lead-property {
+      font-size: 13px;
+      color: var(--gold-light);
+      margin-top: 3px;
+    }
+
+    .lead-email {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .lead-obs {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.03);
+      border-left: 2px solid var(--gold-primary);
+      padding: 8px 10px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-edit-note {
+      background: rgba(212, 175, 55, 0.14);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-light);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .lead-vgv {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-primary);
+      text-align: right;
+    }
+
+    .lead-vgv-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .lead-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .temp-selector {
+      display: flex;
+      gap: 6px;
+    }
+
+    .temp-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-muted);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .temp-btn.selected {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .dialer-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-whats {
+      background: rgba(52, 199, 89, 0.16);
+      color: #4ADE80;
+      border: 1px solid rgba(52, 199, 89, 0.35);
+    }
+
+    .btn-call {
+      background: rgba(212, 175, 55, 0.14);
+      color: var(--gold-light);
+      border: 1px solid var(--border-gold);
+    }
+
+    .btn-mail {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93C5FD;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    /* Modal de Observação e Envio para Outlook */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+    }
+    .modal h3 {
+      font-size: 16px;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+    }
+    .modal p.modal-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    .form-group textarea, .form-group input {
+      width: 100%;
+      background: var(--bg-dark);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 9px;
+      font-size: 14px;
+      color-scheme: dark;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .modal-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
+      padding: 9px 13px;
+      border-radius: 9px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Plans Banner */
+    .plans-section {
+      margin-top: 32px;
+      background: linear-gradient(145deg, #16171D 0%, #0E0F13 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 18px;
+      padding: 22px 18px;
+    }
+
+    .plans-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .plans-header h2 {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--gold-primary);
+      margin-bottom: 6px;
+    }
+
+    .plans-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .plans-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .plan-card {
+      background: var(--bg-dark);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .plan-card.featured {
+      border: 1.5px solid var(--gold-primary);
+      position: relative;
+    }
+
+    .badge-popular {
+      position: absolute;
+      top: -10px;
+      right: 14px;
+      background: var(--gold-gradient);
+      color: #0A0A0C;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .plan-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .plan-price {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--gold-primary);
+      margin: 8px 0;
+    }
+
+    .plan-price span {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .plan-features {
+      list-style: none;
+      margin: 12px 0 18px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .plan-features li::before {
+      content: "✓ ";
+      color: var(--gold-primary);
+      font-weight: 700;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">LF</div>
+      <div class="brand-text">
+        <h1>LeadFlow Pro</h1>
+        <span>Alta Performance Imobiliária</span>
+      </div>
+    </div>
+    <a href="https://wa.me/5511980360441?text=Ol%C3%A1%20Jocimar%2C%20quero%20ativar%20meus%207%20dias%20de%20teste%20gr%C3%A1tis%20no%20LeadFlow%20Pro!" target="_blank" class="trial-badge">
+      ★ Teste Grátis 7 Dias
+    </a>
+  </header>
+
+  <div class="container">
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card gold">
+        <div class="kpi-label">VGV / Poder de Compra</div>
+        <div class="kpi-value gold-text" id="kpi-vgv">R$ 5,25M</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total de Leads</div>
+        <div class="kpi-value" id="kpi-total">3</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">🔴 Leads Quentes</div>
+        <div class="kpi-value" id="kpi-quentes">1</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">🟡 Em Negociação</div>
+        <div class="kpi-value" id="kpi-mornos">1</div>
+      </div>
+    </div>
+
+    <!-- Import Excel Panel -->
+    <div class="import-panel">
+      <div class="import-info">
+        <h2>📥 Planilha Padrão Oficial (.xlsx)</h2>
+        <p>Colunas: <strong>Nome | WhatsApp | Email | Empreendimento | VGV_Estimado | Temperatura | Observacao</strong>.<br>
+        <em>Regras de envio: <strong>mínimo de 10 leads válidos</strong> por planilha (apenas Nome e WhatsApp são obrigatórios) e intervalo de 60 segundos entre envios.</em></p>
+      </div>
+      <div class="import-actions">
+        <button type="button" class="btn-outline" onclick="downloadEmbeddedTemplate()">⬇ Baixar Planilha Modelo (.xlsx)</button>
+        <label class="btn-gold" style="cursor:pointer;">
+          📤 Subir Planilha Preenchida (.xlsx)
+          <input type="file" id="excel-upload" accept=".xlsx,.xls" style="display:none;" onchange="handleExcelUpload(event)" />
+        </label>
+      </div>
+    </div>
+
+    <div id="status-alert" class="alert-box"></div>
+
+    <!-- Filter -->
+    <div class="controls-bar">
+      <div class="filter-pills">
+        <button class="pill active" onclick="setFilter('todos', this)">Todos</button>
+        <button class="pill" onclick="setFilter('quente', this)"><span class="led quente"></span> Quentes</button>
+        <button class="pill" onclick="setFilter('morno', this)"><span class="led morno"></span> Mornos</button>
+        <button class="pill" onclick="setFilter('frio', this)"><span class="led frio"></span> Frios</button>
+      </div>
+    </div>
+
+    <!-- Leads List -->
+    <div class="leads-list" id="leads-container"></div>
+
+    <!-- Subscription Plans -->
+    <div class="plans-section">
+      <div class="plans-header">
+        <h2>Planos LeadFlow Pro</h2>
+        <p>Experimente gratuitamente por 7 dias e escolha o plano ideal para escalar suas vendas.</p>
+      </div>
+      <div class="plans-grid">
+        <div class="plan-card">
+          <div>
+            <div class="plan-title">Starter</div>
+            <div class="plan-price">R$ 19,90 <span>/mês</span></div>
+            <ul class="plan-features">
+              <li>Até 100 leads ativos</li>
+              <li>Semáforo de Temperatura LED</li>
+              <li>Importação em lote (mín. 10 leads)</li>
+              <li>Agendamento de Retorno no Outlook</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/5511980360441?text=Ol%C3%A1%20Jocimar%2C%20quero%20ativar%20o%20Plano%20Starter%20(R%24%2019%2C90)%20do%20LeadFlow%20Pro!" target="_blank" class="btn-gold" style="justify-content:center; text-decoration:none;">Testar 7 Dias Grátis</a>
+        </div>
+
+        <div class="plan-card featured">
+          <div class="badge-popular">Mais Vendido</div>
+          <div>
+            <div class="plan-title">Pro</div>
+            <div class="plan-price">R$ 49,90 <span>/mês</span></div>
+            <ul class="plan-features">
+              <li>Até 500 leads ativos</li>
+              <li>Semáforo LED + Retorno no Outlook</li>
+              <li>Discador Inteligente WhatsApp + E-mail</li>
+              <li>Suporte Prioritário via WhatsApp</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/5511980360441?text=Ol%C3%A1%20Jocimar%2C%20quero%20ativar%20o%20Plano%20Pro%20(R%24%2049%2C90)%20do%20LeadFlow%20Pro!" target="_blank" class="btn-gold" style="justify-content:center; text-decoration:none;">Testar 7 Dias Grátis</a>
+        </div>
+
+        <div class="plan-card">
+          <div>
+            <div class="plan-title">Master</div>
+            <div class="plan-price">R$ 149,90 <span>/mês</span></div>
+            <ul class="plan-features">
+              <li>Leads ilimitados</li>
+              <li>Gestão completa de carteira VIP</li>
+              <li>Relatórios de VGV e Poder de Compra</li>
+              <li>Atendimento VIP dedicado</li>
+            </ul>
+          </div>
+          <a href="https://wa.me/5511980360441?text=Ol%C3%A1%20Jocimar%2C%20quero%20ativar%20o%20Plano%20Master%20(R%24%20149%2C90)%20do%20LeadFlow%20Pro!" target="_blank" class="btn-gold" style="justify-content:center; text-decoration:none;">Testar 7 Dias Grátis</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    LeadFlow Pro © 2026 • Todos os direitos reservados • Suporte: (11) 98036-0441
+  </footer>
+
+  <!-- Modal Observação e Agendamento Direto no Outlook -->
+  <div class="modal-backdrop" id="note-modal">
+    <div class="modal">
+      <h3>📝 Observação & Agendar no Outlook</h3>
+      <p class="modal-sub" id="modal-client-name">Cliente</p>
+      <input type="hidden" id="modal-lead-id" />
+      <div class="form-group">
+        <label>Observação da Ligação</label>
+        <textarea id="modal-obs" rows="3" placeholder="Ex: Pediu para retornar na próxima semana..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Calendário (Data)</label>
+          <input type="date" id="modal-date" />
+        </div>
+        <div class="form-group">
+          <label>Relógio (Hora)</label>
+          <input type="time" id="modal-time" value="10:00" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeNoteModal()">Cancelar</button>
+        <button type="button" class="btn-outline" onclick="saveNoteOnly()">Salvar Observação</button>
+        <button type="button" class="btn-gold" onclick="saveAndOpenOutlook()">📅 Salvar no Outlook</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const REQUIRED_HEADERS = ["Nome", "WhatsApp", "Email", "Empreendimento", "VGV_Estimado", "Temperatura", "Observacao"];
+    const MIN_LEADS_PER_UPLOAD = 10;
+    const UPLOAD_COOLDOWN_MS = 60 * 1000;
+    const EMBEDDED_TEMPLATE_B64 = "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";
+
+    const defaultLeads = [
+      {
+        id: 1,
+        nome: "Carlos Alberto Mendes",
+        tel: "11987654321",
+        email: "carlos.mendes@email.com",
+        imovel: "Apartamento Alto Padrão • Jardins",
+        vgv: 2500000,
+        temp: "quente",
+        obs: "Cliente com recurso à vista, busca 3 suítes."
+      },
+      {
+        id: 2,
+        nome: "Mariana Costa",
+        tel: "11971238899",
+        email: "mariana.costa@email.com",
+        imovel: "Cobertura Duplex • Itaim Bibi",
+        vgv: 1800000,
+        temp: "morno",
+        obs: "Depende da venda de um imóvel atual."
+      },
+      {
+        id: 3,
+        nome: "Roberto Dias",
+        tel: "11965431122",
+        email: "",
+        imovel: "Studio Investimento • Pinheiros",
+        vgv: 950000,
+        temp: "frio",
+        obs: "Pesquisando rentabilidade para locação."
+      }
+    ];
+
+    let leads = JSON.parse(localStorage.getItem('leadflow_leads_v9')) || defaultLeads;
+    let currentFilter = 'todos';
+
+    function showAlert(msg, type) {
+      const box = document.getElementById('status-alert');
+      box.className = 'alert-box ' + type;
+      box.innerHTML = msg;
+    }
+
+    function saveLeads() {
+      localStorage.setItem('leadflow_leads_v9', JSON.stringify(leads));
+      render();
+    }
+
+    function formatCurrency(val) {
+      return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    }
+
+    function changeTemp(id, newTemp) {
+      leads = leads.map(l => l.id === id ? { ...l, temp: newTemp } : l);
+      saveLeads();
+    }
+
+    function openNoteModal(id) {
+      const lead = leads.find(l => l.id === id);
+      if (!lead) return;
+      document.getElementById('modal-lead-id').value = lead.id;
+      document.getElementById('modal-client-name').textContent = `${lead.nome} (${lead.tel})`;
+      document.getElementById('modal-obs').value = lead.obs || "";
+      document.getElementById('modal-date').value = "";
+      document.getElementById('modal-time').value = "10:00";
+      document.getElementById('note-modal').classList.add('open');
+    }
+
+    function closeNoteModal() {
+      document.getElementById('note-modal').classList.remove('open');
+    }
+
+    function saveNoteOnly() {
+      const id = Number(document.getElementById('modal-lead-id').value);
+      const obsVal = document.getElementById('modal-obs').value.trim();
+      leads = leads.map(l => l.id === id ? { ...l, obs: obsVal } : l);
+      saveLeads();
+      closeNoteModal();
+      showAlert("Observação salva no lead com sucesso!", "success");
+    }
+
+    function saveAndOpenOutlook() {
+      const id = Number(document.getElementById('modal-lead-id').value);
+      const obsVal = document.getElementById('modal-obs').value.trim();
+      const dateVal = document.getElementById('modal-date').value;
+      const timeVal = document.getElementById('modal-time').value || "10:00";
+
+      if (!dateVal) {
+        showAlert("Selecione a data no calendário antes de salvar no Outlook.", "error");
+        return;
+      }
+
+      const lead = leads.find(l => l.id === id);
+      if (!lead) return;
+
+      leads = leads.map(l => l.id === id ? { ...l, obs: obsVal } : l);
+      saveLeads();
+      closeNoteModal();
+
+      const startDt = new Date(`${dateVal}T${timeVal}:00`);
+      const endDt = new Date(startDt.getTime() + 30 * 60 * 1000);
+
+      const subject = encodeURIComponent(`Retornar Ligação: ${lead.nome}`);
+      const bodyText = `Cliente: ${lead.nome}\nTelefone/WhatsApp: ${lead.tel}\nImóvel: ${lead.imovel || 'Não informado'}\nObservação: ${obsVal || 'Retorno agendado via LeadFlow Pro'}`;
+      const body = encodeURIComponent(bodyText);
+      const startIso = encodeURIComponent(startDt.toISOString());
+      const endIso = encodeURIComponent(endDt.toISOString());
+
+      const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${subject}&body=${body}&startdt=${startIso}&enddt=${endIso}&path=%2Fcalendar%2Faction%2Fcompose&rru=addevent`;
+      window.open(outlookUrl, "_blank", "noopener,noreferrer");
+      showAlert(`Observação salva e agendamento aberto diretamente no Outlook (${dateVal.split('-').reverse().join('/')} às ${timeVal})!`, "success");
+    }
+
+    function downloadEmbeddedTemplate() {
+      try {
+        const byteCharacters = atob(EMBEDDED_TEMPLATE_B64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Modelo_Planilha_LeadFlow_Pro.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showAlert("Download da planilha modelo oficial iniciado! Lembre-se: mínimo de 10 leads válidos por planilha (Nome e WhatsApp obrigatórios).", "success");
+      } catch (err) {
+        showAlert("Não foi possível baixar o modelo neste navegador. Tente abrir no Chrome ou Safari.", "error");
+      }
+    }
+
+    function normalizeTemp(val) {
+      const v = String(val || "").trim().toLowerCase();
+      if (v.includes("quente")) return "quente";
+      if (v.includes("morno")) return "morno";
+      return "frio";
+    }
+
+    function parseVGV(val) {
+      if (val === undefined || val === null || String(val).trim() === "") return 0;
+      if (typeof val === 'number') return val;
+      const cleaned = String(val).replace(/[R$\s.]/g, "").replace(",", ".");
+      const num = parseFloat(cleaned);
+      return isNaN(num) ? 0 : num;
+    }
+
+    function handleExcelUpload(event) {
+      const inputEl = event.target;
+      const file = inputEl.files && inputEl.files[0];
+      if (!file) return;
+
+      const lastUpload = Number(localStorage.getItem('leadflow_last_upload_ts') || 0);
+      const elapsed = Date.now() - lastUpload;
+      if (lastUpload > 0 && elapsed < UPLOAD_COOLDOWN_MS) {
+        const waitSec = Math.ceil((UPLOAD_COOLDOWN_MS - elapsed) / 1000);
+        showAlert(
+          `<strong>Aguarde ${waitSec} segundo(s) antes de enviar outra planilha.</strong><br>Para evitar sobrecarga no sistema, concentre seus contatos em uma única planilha com pelo menos <strong>${MIN_LEADS_PER_UPLOAD} leads</strong>.`,
+          "error"
+        );
+        inputEl.value = "";
+        return;
+      }
+
+      if (typeof XLSX === 'undefined') {
+        showAlert("Biblioteca de leitura Excel ainda carregando. Verifique sua conexão e tente novamente em 2 segundos.", "error");
+        inputEl.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+          if (!rows || rows.length < 2) {
+            showAlert("Planilha recusada: o arquivo está vazio ou não possui leads preenchidos.", "error");
+            inputEl.value = "";
+            return;
+          }
+
+          const fileHeaders = rows[0].map(h => String(h || "").trim());
+          const isValid = REQUIRED_HEADERS.every((req, idx) => fileHeaders[idx] === req);
+
+          if (!isValid) {
+            showAlert(
+              `<strong>Planilha recusada por fora do padrão!</strong><br>As colunas da primeira linha devem ser exatamente:<br><code>${REQUIRED_HEADERS.join(" | ")}</code><br>Clique em <strong>Baixar Planilha Modelo (.xlsx)</strong> ao lado e preencha sem alterar o cabeçalho.`,
+              "error"
+            );
+            inputEl.value = "";
+            return;
+          }
+
+          const imported = [];
+          let skippedRows = 0;
+
+          for (let i = 1; i < rows.length; i++) {
+            const r = rows[i];
+            if (!r || r.length === 0 || r.every(cell => cell === undefined || cell === null || String(cell).trim() === "")) {
+              continue;
+            }
+
+            const nomeVal = String(r[0] || "").trim();
+            const telVal = String(r[1] || "").replace(/\D/g, "");
+
+            if (!nomeVal || !telVal) {
+              skippedRows++;
+              continue;
+            }
+
+            imported.push({
+              id: Date.now() + i,
+              nome: nomeVal,
+              tel: telVal,
+              email: String(r[2] || "").trim(),
+              imovel: String(r[3] || "").trim(),
+              vgv: parseVGV(r[4]),
+              temp: normalizeTemp(r[5]),
+              obs: String(r[6] || "").trim()
+            });
+          }
+
+          if (imported.length < MIN_LEADS_PER_UPLOAD) {
+            showAlert(
+              `<strong>Envio bloqueado — Quantidade mínima não atingida!</strong><br>Sua planilha possui apenas <strong>${imported.length} lead(s) válido(s)</strong> (com Nome e WhatsApp). O sistema exige no mínimo <strong>${MIN_LEADS_PER_UPLOAD} leads por planilha</strong> para evitar envios fragmentados. Preencha mais leads no mesmo arquivo e tente novamente.`,
+              "error"
+            );
+            inputEl.value = "";
+            return;
+          }
+
+          leads = imported;
+          localStorage.setItem('leadflow_last_upload_ts', String(Date.now()));
+          saveLeads();
+          const extraMsg = skippedRows > 0 ? ` (${skippedRows} linha(s) incompleta(s) ignorada(s))` : "";
+          showAlert(`Sucesso! ${imported.length} leads importados em lote no padrão oficial LeadFlow Pro${extraMsg}.`, "success");
+          inputEl.value = "";
+        } catch (err) {
+          showAlert("Não foi possível ler o arquivo. Certifique-se de enviar uma planilha Excel (.xlsx) válida no padrão oficial.", "error");
+          inputEl.value = "";
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function render() {
+      const container = document.getElementById('leads-container');
+      const filtered = currentFilter === 'todos' ? leads : leads.filter(l => l.temp === currentFilter);
+
+      const totalVgv = leads.reduce((acc, l) => acc + Number(l.vgv || 0), 0);
+      document.getElementById('kpi-vgv').textContent = totalVgv >= 1000000
+        ? `R$ ${(totalVgv / 1000000).toFixed(2).replace('.', ',')}M`
+        : formatCurrency(totalVgv);
+      document.getElementById('kpi-total').textContent = leads.length;
+      document.getElementById('kpi-quentes').textContent = leads.filter(l => l.temp === 'quente').length;
+      document.getElementById('kpi-mornos').textContent = leads.filter(l => l.temp === 'morno').length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="lead-card" style="text-align:center; color: var(--text-muted); font-size: 13px;">Nenhum lead encontrado neste filtro.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(lead => {
+        const cleanPhone = String(lead.tel).replace(/\D/g, '');
+        const imovelLabel = lead.imovel ? lead.imovel : "Interesse não especificado";
+        const waText = lead.imovel
+          ? `Olá ${lead.nome}, tudo bem? Gostaria de conversar sobre o imóvel (${lead.imovel}).`
+          : `Olá ${lead.nome}, tudo bem? Aqui é seu consultor imobiliário.`;
+        const waMsg = encodeURIComponent(waText);
+        const vgvDisplay = Number(lead.vgv) > 0 ? formatCurrency(Number(lead.vgv)) : "Não informado";
+
+        const emailHtml = lead.email ? `<div class="lead-email">✉️ ${lead.email}</div>` : "";
+        const mailBtnHtml = lead.email
+          ? `<a href="mailto:${lead.email}?subject=${encodeURIComponent('Oportunidade Imobiliária')}" class="btn-action btn-mail">✉️ E-mail</a>`
+          : "";
+
+        const obsText = lead.obs ? lead.obs : "Nenhuma anotação registrada ainda.";
+
+        return `
+          <div class="lead-card">
+            <div class="lead-top">
+              <div>
+                <div class="lead-name">
+                  <span class="led ${lead.temp}"></span>
+                  ${lead.nome}
+                </div>
+                <div class="lead-property">${imovelLabel}</div>
+                ${emailHtml}
+              </div>
+              <div>
+                <div class="lead-vgv">${vgvDisplay}</div>
+                <div class="lead-vgv-sub">VGV / Poder de Compra</div>
+              </div>
+            </div>
+            <div class="lead-obs">
+              <div><strong>Obs:</strong> ${obsText}</div>
+              <button type="button" class="btn-edit-note" onclick="openNoteModal(${lead.id})">✏️ Observação / Outlook</button>
+            </div>
+            <div class="lead-actions">
+              <div class="temp-selector">
+                <button class="temp-btn ${lead.temp === 'quente' ? 'selected' : ''}" onclick="changeTemp(${lead.id}, 'quente')">
+                  <span class="led quente"></span> Quente
+                </button>
+                <button class="temp-btn ${lead.temp === 'morno' ? 'selected' : ''}" onclick="changeTemp(${lead.id}, 'morno')">
+                  <span class="led morno"></span> Morno
+                </button>
+                <button class="temp-btn ${lead.temp === 'frio' ? 'selected' : ''}" onclick="changeTemp(${lead.id}, 'frio')">
+                  <span class="led frio"></span> Frio
+                </button>
+              </div>
+              <div class="dialer-group">
+                <a href="tel:+55${cleanPhone}" class="btn-action btn-call">📞 Ligar</a>
+                <a href="https://wa.me/55${cleanPhone}?text=${waMsg}" target="_blank" class="btn-action btn-whats">💬 WhatsApp</a>
+                ${mailBtnHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    render();
+  </script>
+</body>
+</html>
